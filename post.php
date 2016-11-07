@@ -8,36 +8,35 @@ $que=mysql_query("select * from user where uname='$e'");
 $res=mysql_fetch_assoc($que);
 $uid=$res['userid'];
 $gen=$res['gender'];
-if(!file_exists("users/$gen/$e/post")){
+if(!file_exists("users/$gen/$e/post"))
+{
   mkdir("users/$gen/$e/post");
 }
 if(isset($sub))
 {
-
   $post_txt=$ptext;
   $post_pic=$_FILES['file']['name'];
   $post_time=$date;
   $q=mysql_query("insert into user_post values('','$uid','$post_txt','$post_pic','$post_time')");
   move_uploaded_file($_FILES['file']['tmp_name'],"users/$gen/$e/post/".$_FILES['file']['name']);
-
 }
 
 
 //delete post//
-if(isset($del_post)){
+if(isset($del_post))
+{
   $pid=$pid;
   $qt=mysql_fetch_assoc(mysql_query("select post_pic from user_post where post_id='$pid'"));
-   $pic=$qt['post_pic'];
+  $pic=$qt['post_pic'];
   unlink("users/$gen/$e/post/$pic");
   mysql_query("delete from post_status where post_id='$pid'");
   mysql_query("delete from user_post where post_id='$pid'");
+  //deletes all commments and all replies corresponding
+  //mysql_fetch_assoc(mysql_query("select "))
   mysql_query("delete from user_comment where post_id='$pid'");
+
 }
-
 //del_post//
-
-
-
 ?>
 <html>
 <head>
@@ -98,6 +97,40 @@ if(isset($del_post)){
     .commSec{
       border: 1px solid black;
     }
+
+    .relplyAttr
+    {
+      float:left;
+    }
+
+    #replyBut
+    {
+      height:22px;
+      width:80px;
+      border: 2px solid black;
+      text-align: center;
+      cursor: pointer;
+    }
+
+    #replyBut:hover
+    {
+      background-color: blue;
+    }
+
+    .delReplyBut
+    {
+      height:20px;
+      text-align: center;
+      width:80px;
+      border:1px solid black;
+    }
+
+    .delReplyBut:hover
+    {
+
+      background-color: blue;
+      cursor: pointer;
+    }
   </style>
   <script src="js/date.js"></script>
   <script>
@@ -133,7 +166,7 @@ if(isset($del_post)){
     $res=mysql_fetch_assoc($que);
     $uid=$res['userid'];
     $gen=$res['gender'];
-  $qut=mysql_query("select * from user_post order by post_id desc");
+    $qut=mysql_query("select * from user_post order by post_id desc");
     while($res=mysql_fetch_assoc($qut)){
            $pid=$res['post_id'];
             $upid=$res['user_id'];//user of particular post//
@@ -146,23 +179,24 @@ if(isset($del_post)){
             $gen=$rt['gender'];
             $un=$rt['uname'];
             $p_time=$res['post_time'];
-             echo "<h1 align=\"left\">$cn</h1>";
-             echo "<h1 align=\"right\">$p_time</h1>";
-             if($pic==""){
-             }
+            echo "<h1 align=\"left\">$cn</h1>";
+            echo "<h1 align=\"right\">$p_time</h1>";
+            if($pic==""){
+            }
              else{
-          echo "<img align=\"center\" height=\"500px\"  width=\"500px\" src=\"users/$gen/$un/post/$pic\" />";
-}
-       echo "<br/>";
-       echo $res['post_txt'];
-            if($upid==$uid){
+            echo "<img align=\"center\" height=\"500px\"  width=\"500px\" src=\"users/$gen/$un/post/$pic\" />";
+             }
+            echo "<br/>";
+            echo $res['post_txt'];
+            if($upid==$uid)
+            {
               ?>
             <form method="post">
             <input type="submit" name="del_post" value="Delete Post" />
             <input type="hidden" name="pid" value="<?php echo $pid ;?>" />
             </form>
             <?php
-          }
+            }
 
           //like section//
 
@@ -206,7 +240,6 @@ if(isset($del_post)){
            <div  class="like-count"><?php echo $rate_like_count; ?></div>
            </div>
            </div><!-- /stat-cnt -->
-
            </div>
 
           <?php
@@ -214,58 +247,128 @@ if(isset($del_post)){
            $commSec="commSec".$pid;//section of the comment area//
            $query=mysql_query("select * from user_comment where post_id='$pid' order by comment_id");
            $countComm=mysql_num_rows($query);//no of users corresponding to a particular post//
-
-        ?>
-
-
-
-    <input type="text" id="<?php echo $commTextId; ?>" name="com_txt"  placeholder="enter your comment here..." />
-    <button onclick="postCom(<?php echo $pid; ?>)">Comment</button>
-    <br/>
-    <div class="commSec" id="<?php echo $commSec; ?>">
-    Comments:<?php echo $countComm; ?>
-    <br/>
-    <?php
-    while($res=mysql_fetch_assoc($query)){
+           ?>
+          <input type="text" id="<?php echo $commTextId; ?>" name="com_txt"  placeholder="enter your comment here..." />
+          <button onclick="postCom(<?php echo $pid; ?>)">Comment</button>
+          <br/>
+          <div class="commSec" id="<?php echo $commSec; ?>">
+          Comments:<?php echo $countComm; ?>
+          <br/>
+          <?php
+      while($res=mysql_fetch_assoc($query)){
       $commentId=$res['comment_id'];
       $userIdOfComment=$res['user_id'];
       $userDet=mysql_query("select fname,lname from user where userid='$userIdOfComment'");
       $userRes=mysql_fetch_assoc($userDet);
       echo $userRes['fname']." ".$userRes['lname'].":".$res['comm_text'];
+      //attributes of the replysection//
+      $replySecDivId="replySecDiv".$commentId;
+      $replyTextId="replyText".$commentId;
+      ?>
+      <br/>
+      <input type="text" id="<?php echo $replyTextId; ?>" class="relplyAttr" placeholder="Enter your reply..." /><div  class="relplyAttr" id="replyBut" onclick="postReplyToCommment(<?php echo $commentId; ?>)" >Reply</div><br/>
+      <br/>
+      <div id="<?php echo $replySecDivId; ?>">
+      <?php
+      $replyQ=mysql_query("select * from replyTocommentOfPost where commentId='$commentId'");
+      $countOfReplies=mysql_num_rows($replyQ);
+      echo "Replies".":".$countOfReplies;
+      echo "<br/>";
+      while($res=mysql_fetch_assoc($replyQ))
+      {
+      $replyId=$res['replyId'];
+      $commentId=$res['commentId'];
+      $userOfReplyId=$res['userId'];
+      $replyText=$res['replyText'];
+      $userOfReply=mysql_fetch_assoc(mysql_query("select fname,lname from user where userid='$userOfReplyId'"));
+      echo $userOfReply['fname']." ".$userOfReply['lname'].":".$replyText;
+
+      $delReplyOfPostButId="delReplyOfPostBut".$replyId;//this is for deleting the reply to the comment of the post//
+      if($userOfReplyId==$uid||$userIdOfComment==$uid)
+      {
+      ?>
+      <!--section fr deeting the reply on comment of the post-->
+      <div class="delReplyBut" id="<?php echo $delReplyOfPostButId; ?>" onclick="deleteReplyOfPost(<?php echo $replyId; ?>,<?php echo $commentId;?>)">Delete</div>
+      <?php
+      }
+      echo "<br/>";
+      }
+
+      ?>
+      </div>
+      <?php
       echo "<br/>";
 
       //delete option comes only if the post belongs to the user or the comment belongs to the user on different user post//
       if($upid==$uid || $userIdOfComment==$uid )
-  {
+      {
       $delComButId="delComBut".$commentId;//id for ech delete button for the comment//
       ?>
-
-<!--delete button for deleteing the comment -->
-  <div class="delComBut" id="<?php echo $delComButId; ?>"  onclick="deleteComment(<?php echo $commentId; ?>,<?php echo $pid; ?>)">Delete Comment</div>
-  <!--delete portion ends here -->
-
+      <!--delete button for deleteing the comment -->
+      <div class="delComBut" id="<?php echo $delComButId; ?>"  onclick="deleteComment(<?php echo $commentId; ?>,<?php echo $pid; ?>)">Delete Comment</div>
+      <!--delete portion ends here -->
+      <?php
+      }
+      }
+      ?>
+  </div>
   <?php
+  echo "<hr/>";
   }
-    }
-
- ?>
-</div>
-    <?php
-
-    //
-    echo "<hr/>";
-  }
-
-?>
+  ?>
   </section>
-   </section>
+  </section>
+  <section id="right"></section>
+ <script src="js/postLikeSystem.js"></script>
+ <script src="js/delete.js"></script>
+ <script>
+ function deleteReplyOfPost(replyId,commentId)
+ {
+   if(window.XMLHttpRequest){
+     xmlhttp=new XMLHttpRequest();
+   }
+   else{
+     xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+   }
+   xmlhttp.onreadystatechange=function(){
 
-   <section id="right">
+                if(xmlhttp.readyState == 4 && xmlhttp.status == 200){
+                  document.getElementById("replySecDiv"+commentId).innerHTML=xmlhttp.responseText;
+               }
+              }
+              xmlhttp.open("REQUEST","deleteReplyToCommentOfPost.php?commentId="+commentId+"&replyId="+replyId,true);
+       xmlhttp.send();
+ }
+ function postReplyToCommment(commentId)
+ {
+ //var id=document.getElementById("replySecDiv"+commentId);
+ var replyTextId=document.getElementById("replyText"+commentId);
+ var text=replyTextId.value;
+ if(replyTextId.value=="")
+ {
+  alert("All fields required");
+ }
+ else
+ {
+if(window.XMLHttpRequest){
+  xmlhttp=new XMLHttpRequest();
+}
+else{
+  xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+}
+replyTextId.value="";
+xmlhttp.onreadystatechange=function(){
 
-   </section>
-<script src="js/postLikeSystem.js"></script>
-<script src="js/delete.js"></script>
-<script>
+             if(xmlhttp.readyState == 4 && xmlhttp.status == 200){
+               document.getElementById("replySecDiv"+commentId).innerHTML=xmlhttp.responseText;
+
+             }
+           }
+           xmlhttp.open("REQUEST","postReplyToCommentOfPost.php?commentId="+commentId+"&replyText="+text,true);
+    xmlhttp.send();
+  }
+}
+
 function postCom(cId){
 var commTextId=document.getElementById("commText"+cId);//id of thecomment text box
 var commSec=document.getElementById("commSec"+cId);

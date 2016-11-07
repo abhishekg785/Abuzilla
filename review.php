@@ -23,22 +23,29 @@ move_uploaded_file($_FILES['uploadFile']['tmp_name'],"users/$gender/$e/reviewFil
    <title>Get Reviews</title>
   <link rel="stylesheet" type="text/css" href="css/like&unlike.css">
      <style>
-         body{
+         body
+          {
              font-family:arial;
              position: relative;
-         }
-         #reviewText{
+
+          }
+
+         #reviewText
+         {
              height:100px;
              width:400px;
              font-family:30px;
              font-family:arial;
           }
-         #headSection{
+
+         #headSection
+         {
              width:100%;
             position: absolute;
-
          }
-         #reviewSec{
+
+         #reviewSec
+         {
            position: absolute;
            width: 85%;
            text-align: center;
@@ -46,7 +53,9 @@ move_uploaded_file($_FILES['uploadFile']['tmp_name'],"users/$gender/$e/reviewFil
            overflow: auto;
            left:85px;
           }
-          .rateBut{
+
+          .rateBut
+          {
             cursor: pointer;
             float: left;
             margin:10px;
@@ -55,29 +64,34 @@ move_uploaded_file($_FILES['uploadFile']['tmp_name'],"users/$gender/$e/reviewFil
             width:100px;
             border:2px solid black;
            }
-         .suggestText{
-           float: left;
 
-         }
-          .butSec{
-          float: left;
+         .suggestText
+          {
+           float: left;
+          }
+          .butSec
+          {
+            float: left;
             margin: 0px auto;
             width:85%;
            }
-           .loveClick{
+
+           .loveClick
+           {
              background-color: green;
            }
-           .unlikeClick{
+
+           .unlikeClick
+           {
              background-color: red;
            }
 
           .commentarea
           {
-
             width:500px;
             height:100px;
             position: relative;
-           top:50px;
+            top:50px;
             margin: 0px;
             padding: 0px;
             overflow: auto;
@@ -100,6 +114,7 @@ move_uploaded_file($_FILES['uploadFile']['tmp_name'],"users/$gender/$e/reviewFil
             text-align: center;
             cursor: pointer;
           }
+
           .delSuggestBut:hover
           {
             background-color: lightblue;
@@ -178,7 +193,8 @@ move_uploaded_file($_FILES['uploadFile']['tmp_name'],"users/$gender/$e/reviewFil
      //details of the user ends here//
      if($revFile==""){
      }
-     else{
+     else
+     {
        echo "<img height='250px' width='500px' src='users/$genderOfRevUser/$unameOfReview/reviewFiles/$revFile' />";
      }
 
@@ -280,7 +296,8 @@ move_uploaded_file($_FILES['uploadFile']['tmp_name'],"users/$gender/$e/reviewFil
     echo "<br/>";
     echo "<br/>";
     echo "<br/>";
-    echo "<br/>";echo "<br/>";
+    echo "<br/>";
+    echo "<br/>";
      }
     ?>
     </section>
@@ -327,7 +344,8 @@ move_uploaded_file($_FILES['uploadFile']['tmp_name'],"users/$gender/$e/reviewFil
             xmlhttp.send();
     }
 
-    function postSuggest(revId){
+    function postSuggest(revId)
+    {
     var suggestTextId=document.getElementById("suggestText"+revId);       //id of each suggest text//
     var suggestText=suggestTextId.value;
     //var its=document.getElementById("commentSec"+revId);
